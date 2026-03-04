@@ -58,8 +58,10 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
       barrierDismissible: false,
       builder: (ctx) {
         return Dialog(
+          backgroundColor: const Color(0xFFF8FCFC),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),
+            side: const BorderSide(color: Color(0xFFD8EEED)),
           ),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
@@ -175,15 +177,25 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
+                          color: Color(0xFF0B4F4E),
                         ),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 14),
-                const Text(
-                  'Apakah anda yakin ingin mengakhiri perjalanan ini? Setelah dikirim ke audit, data pengeluaran tidak dapat diubah.',
-                  style: TextStyle(color: Colors.black87, height: 1.35),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEFF7F6),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFD8EEED)),
+                  ),
+                  child: const Text(
+                    'Apakah anda yakin ingin mengakhiri perjalanan ini? Setelah dikirim ke audit, data pengeluaran tidak dapat diubah.',
+                    style: TextStyle(color: Color(0xFF0B4F4E), height: 1.35),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 Row(
@@ -192,11 +204,16 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                       child: OutlinedButton(
                         onPressed: () => Navigator.of(ctx).pop(false),
                         style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFF0E7C7B),
+                          side: const BorderSide(color: Color(0xFF0E7C7B)),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Text('Tidak'),
+                        child: const Text(
+                          'Tidak',
+                          style: TextStyle(color: Color(0xFF0E7C7B)),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 10),
