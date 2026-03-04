@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "node-fetch": "^3.3.2",
+    "string-similarity": "^4.0.4"
+  }
+}
