@@ -1,64 +1,105 @@
 # App Update via GitHub Release (Android)
 
-Dokumen ini menyiapkan alur update APK tanpa Play Store.
+Panduan ini untuk distribusi APK tanpa Play Store, dengan notifikasi update otomatis dari file manifest JSON.
 
-## 1) Build APK terbaru
+## Prasyarat
+
+1. Repository GitHub bersifat publik (atau link raw/asset bisa diakses user).
+2. App dibuild dengan `--dart-define=APP_UPDATE_MANIFEST_URL=...`.
+3. File manifest publik ada di path tetap, disarankan:
+   - `deploy/update/app-update.json`
+
+## Rilis Pertama (Bridge Release)
+
+Rilis ini wajib sekali untuk memastikan semua user punya APK yang sudah tahu URL manifest.
+
+### 1) Set versi aplikasi
+
+Update `pubspec.yaml` menggunakan format:
+
+- `version: 1.0.2+1`
+
+Catatan:
+
+- `1.0.2` = versi yang dibandingkan untuk popup update
+- `+1` = build number internal Android
+
+### 2) Pastikan manifest live sudah ada
+
+Gunakan file live:
+
+- `deploy/update/app-update.json`
+
+Jangan pakai file template untuk URL produksi.
+
+### 3) Build APK release dengan manifest URL
 
 ```bash
-flutter build apk --release
+flutter build apk --release --dart-define=APP_UPDATE_MANIFEST_URL=https://raw.githubusercontent.com/<owner>/<repo>/main/deploy/update/app-update.json
 ```
 
 Output default:
 
 - `build/app/outputs/flutter-apk/app-release.apk`
 
-## 2) Buat GitHub Release
+### 4) Buat GitHub Release
 
-1. Buat tag versi, contoh: `v1.0.1`
-2. Buat release dari tag tersebut
-3. Upload asset APK: `app-release.apk`
+1. Buat tag, contoh `v1.0.2`
+2. Buat release dari tag itu
+3. Upload asset `app-release.apk`
 
-Contoh URL APK di release:
+Contoh URL asset:
 
-- `https://github.com/<owner>/<repo>/releases/download/v1.0.1/app-release.apk`
+- `https://github.com/<owner>/<repo>/releases/download/v1.0.2/app-release.apk`
 
-## 3) Publish manifest update (JSON)
+### 5) Update manifest live
 
-1. Salin `deploy/update/app-update-manifest.template.json`
-2. Ubah nilai sesuai release terbaru
-3. Simpan sebagai file publik, contoh:
-   - GitHub Pages: `https://<owner>.github.io/<repo>/app-update.json`
-   - Raw branch publik: `https://raw.githubusercontent.com/<owner>/<repo>/<branch>/deploy/update/app-update.json`
+Edit `deploy/update/app-update.json` agar menunjuk release terbaru, contoh:
 
-Field penting:
-
-- `latest_version`: versi app terbaru (contoh `1.0.1`)
-- `apk_url`: link APK dari GitHub Release
-- `force_update`: `true` jika wajib update
-- `min_supported_version`: versi minimal yang masih diizinkan
-
-## 4) Jalankan app dengan URL manifest
-
-Saat run/debug:
-
-```bash
-flutter run --dart-define=APP_UPDATE_MANIFEST_URL=https://<manifest-url>/app-update.json
+```json
+{
+  "latest_version": "1.0.2",
+  "min_supported_version": "1.0.0",
+  "force_update": false,
+  "title": "Update Tersedia",
+  "message": "Versi terbaru aplikasi sudah tersedia.",
+  "changelog": "- Perbaikan bug\n- Peningkatan performa",
+  "apk_url": "https://github.com/<owner>/<repo>/releases/download/v1.0.2/app-release.apk"
+}
 ```
 
-Saat build release:
+Lalu commit + push.
 
-```bash
-flutter build apk --release --dart-define=APP_UPDATE_MANIFEST_URL=https://<manifest-url>/app-update.json
-```
+## Rilis Berikutnya (Setiap Ada Fitur Baru)
 
-## 5) Cara rilis berikutnya
+1. Naikkan versi di `pubspec.yaml` (mis. `1.0.3+2`).
+2. Build APK dengan command `--dart-define` yang sama.
+3. Buat tag/release baru (mis. `v1.0.3`) dan upload APK.
+4. Update `deploy/update/app-update.json`:
+   - `latest_version`: `1.0.3` (tanpa huruf `v`)
+   - `apk_url`: URL release asset versi baru
+   - sesuaikan `force_update` / `min_supported_version`
+5. Commit + push manifest.
 
-1. Update versi di `pubspec.yaml` (mis. `1.0.2+3`)
-2. Build APK
-3. Upload ke GitHub Release tag `v1.0.2`
-4. Update `app-update.json`:
-   - `latest_version` jadi `1.0.2`
-   - `apk_url` ke release terbaru
-   - sesuaikan `force_update` jika perlu
+User dengan versi lama akan melihat popup update saat membuka Home.
 
-Aplikasi user lama akan membaca manifest saat masuk Home dan menampilkan popup update otomatis bila ada versi baru.
+## Validasi Cepat
+
+1. Buka URL manifest dari browser HP:
+   - harus `200 OK`
+   - harus JSON valid
+2. Buka `apk_url` dari browser HP:
+   - file APK bisa diunduh
+3. Cek versi user lama < `latest_version` di manifest.
+
+## Troubleshooting Umum
+
+- Popup tidak muncul:
+  - APK user lama belum dibuild dengan `APP_UPDATE_MANIFEST_URL`
+  - URL manifest salah/404/private
+  - `latest_version` sama dengan versi terpasang
+- Tombol update tidak jalan:
+  - `apk_url` salah atau asset release tidak ada
+- Manifest sudah diubah tapi app belum baca versi baru:
+  - file belum di-push
+  - URL mengarah ke path/file yang berbeda
