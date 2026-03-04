@@ -46,7 +46,8 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
       return path;
     }
     final base = Uri.parse(ApiConfig.current.baseUrl);
-    final origin = '${base.scheme}://${base.host}${base.hasPort ? ':${base.port}' : ''}';
+    final origin =
+        '${base.scheme}://${base.host}${base.hasPort ? ':${base.port}' : ''}';
     if (path.startsWith('/')) return '$origin$path';
     return '$origin/$path';
   }
@@ -57,7 +58,9 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
       barrierDismissible: false,
       builder: (ctx) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
             child: Column(
@@ -82,7 +85,10 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                     const Expanded(
                       child: Text(
                         'Hapus transaksi?',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ],
@@ -116,7 +122,97 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Text('Ya', style: TextStyle(color: Colors.white)),
+                        child: const Text(
+                          'Ya',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    return result == true;
+  }
+
+  Future<bool> _showEndTripConfirmDialog() async {
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEAF9F8),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.flag_outlined,
+                        color: Color(0xFF0E7C7B),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Text(
+                        'Akhiri perjalanan?',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                const Text(
+                  'Apakah anda yakin ingin mengakhiri perjalanan ini? Setelah dikirim ke audit, data pengeluaran tidak dapat diubah.',
+                  style: TextStyle(color: Colors.black87, height: 1.35),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.of(ctx).pop(false),
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text('Tidak'),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.of(ctx).pop(true),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF0E7C7B),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          'Ya, Akhiri',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                   ],
@@ -131,9 +227,13 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
   }
 
   Future<void> _showEditDialog(ExpenseEntity item) async {
-    final keteranganController = TextEditingController(text: item.keterangan ?? '');
+    final keteranganController = TextEditingController(
+      text: item.keterangan ?? '',
+    );
     final nominalController = TextEditingController(
-      text: NumberFormat.decimalPattern('id_ID').format((item.nominal ?? 0).toInt()),
+      text: NumberFormat.decimalPattern(
+        'id_ID',
+      ).format((item.nominal ?? 0).toInt()),
     );
     DateTime? selectedDate;
     bool replaceAttachments = false;
@@ -152,8 +252,14 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
         return StatefulBuilder(
           builder: (ctx, setLocalState) {
             return Dialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              insetPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              backgroundColor: const Color(0xFFF8FCFC),
+              insetPadding: const EdgeInsets.symmetric(
+                horizontal: 18,
+                vertical: 24,
+              ),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
                 child: SingleChildScrollView(
@@ -163,10 +269,16 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                     children: [
                       const Text(
                         'Edit Transaksi',
-                        style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800),
+                        style: TextStyle(
+                          fontSize: 19,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                       const SizedBox(height: 14),
-                      const Text('Keterangan', style: TextStyle(color: Colors.black54)),
+                      const Text(
+                        'Keterangan',
+                        style: TextStyle(color: Colors.black54),
+                      ),
                       const SizedBox(height: 6),
                       TextField(
                         controller: keteranganController,
@@ -179,16 +291,24 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(color: Color(0xFFE1E6EB)),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFE1E6EB),
+                            ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(color: Color(0xFF0E7C7B), width: 1.6),
+                            borderSide: const BorderSide(
+                              color: Color(0xFF0E7C7B),
+                              width: 1.6,
+                            ),
                           ),
                         ),
                       ),
                       const SizedBox(height: 12),
-                      const Text('Nominal', style: TextStyle(color: Colors.black54)),
+                      const Text(
+                        'Nominal',
+                        style: TextStyle(color: Colors.black54),
+                      ),
                       const SizedBox(height: 6),
                       TextField(
                         controller: nominalController,
@@ -199,10 +319,14 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                         onChanged: (value) {
                           final raw = value.replaceAll(RegExp(r'[^0-9]'), '');
                           if (raw.isEmpty) return;
-                          final formatted = NumberFormat.decimalPattern('id_ID').format(int.parse(raw));
+                          final formatted = NumberFormat.decimalPattern(
+                            'id_ID',
+                          ).format(int.parse(raw));
                           nominalController.value = TextEditingValue(
                             text: formatted,
-                            selection: TextSelection.collapsed(offset: formatted.length),
+                            selection: TextSelection.collapsed(
+                              offset: formatted.length,
+                            ),
                           );
                         },
                         decoration: InputDecoration(
@@ -214,16 +338,24 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(color: Color(0xFFE1E6EB)),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFE1E6EB),
+                            ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(color: Color(0xFF0E7C7B), width: 1.6),
+                            borderSide: const BorderSide(
+                              color: Color(0xFF0E7C7B),
+                              width: 1.6,
+                            ),
                           ),
                         ),
                       ),
                       const SizedBox(height: 12),
-                      const Text('Tanggal', style: TextStyle(color: Colors.black54)),
+                      const Text(
+                        'Tanggal',
+                        style: TextStyle(color: Colors.black54),
+                      ),
                       const SizedBox(height: 6),
                       InkWell(
                         onTap: () async {
@@ -240,7 +372,10 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                         borderRadius: BorderRadius.circular(12),
                         child: Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 14,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFFF7F9FB),
                             borderRadius: BorderRadius.circular(12),
@@ -248,20 +383,29 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.calendar_today, size: 18, color: Color(0xFF0E7C7B)),
+                              const Icon(
+                                Icons.calendar_today,
+                                size: 18,
+                                color: Color(0xFF0E7C7B),
+                              ),
                               const SizedBox(width: 10),
                               Text(
                                 selectedDate == null
                                     ? (item.tanggal ?? 'Pilih tanggal')
                                     : formatYmd(selectedDate!),
-                                style: const TextStyle(fontWeight: FontWeight.w600),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ],
                           ),
                         ),
                       ),
                       const SizedBox(height: 12),
-                      const Text('Foto Bukti', style: TextStyle(color: Colors.black54)),
+                      const Text(
+                        'Foto Bukti',
+                        style: TextStyle(color: Colors.black54),
+                      ),
                       const SizedBox(height: 6),
                       if (item.attachments.isEmpty)
                         Container(
@@ -283,7 +427,8 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                           child: ListView.separated(
                             scrollDirection: Axis.horizontal,
                             itemCount: item.attachments.length,
-                            separatorBuilder: (context, index) => const SizedBox(width: 8),
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(width: 8),
                             itemBuilder: (_, i) {
                               final att = item.attachments[i];
                               return Opacity(
@@ -295,12 +440,15 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                                     width: 84,
                                     height: 84,
                                     fit: BoxFit.cover,
-                                    errorBuilder: (_, error, stackTrace) => Container(
-                                      width: 84,
-                                      height: 84,
-                                      color: const Color(0xFFF1F4F7),
-                                      child: const Icon(Icons.broken_image_outlined),
-                                    ),
+                                    errorBuilder: (_, error, stackTrace) =>
+                                        Container(
+                                          width: 84,
+                                          height: 84,
+                                          color: const Color(0xFFF1F4F7),
+                                          child: const Icon(
+                                            Icons.broken_image_outlined,
+                                          ),
+                                        ),
                                   ),
                                 ),
                               );
@@ -396,11 +544,18 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                             child: OutlinedButton(
                               onPressed: () => Navigator.of(ctx).pop(),
                               style: OutlinedButton.styleFrom(
+                                foregroundColor: const Color(0xFF0E7C7B),
+                                side: const BorderSide(
+                                  color: Color(0xFF0E7C7B),
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              child: const Text('Batal'),
+                              child: const Text(
+                                'Batal',
+                                style: TextStyle(color: Color(0xFF0E7C7B)),
+                              ),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -417,15 +572,23 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                                   );
                                   return;
                                 }
-                                final nominal = int.tryParse(
-                                      nominalController.text.replaceAll(RegExp(r'[^0-9]'), ''),
+                                final nominal =
+                                    int.tryParse(
+                                      nominalController.text.replaceAll(
+                                        RegExp(r'[^0-9]'),
+                                        '',
+                                      ),
                                     ) ??
                                     0;
                                 final patch = <String, dynamic>{
-                                  'keterangan': keteranganController.text.trim(),
+                                  'keterangan': keteranganController.text
+                                      .trim(),
                                   'nominal': nominal,
                                   'tanggal_transaksi': selectedDate == null
-                                      ? (item.tanggal ?? DateFormat('yyyy-MM-dd').format(DateTime.now()))
+                                      ? (item.tanggal ??
+                                            DateFormat(
+                                              'yyyy-MM-dd',
+                                            ).format(DateTime.now()))
                                       : formatYmd(selectedDate!),
                                 };
                                 context.read<TripDetailPageBloc>().add(
@@ -448,7 +611,10 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              child: const Text('Simpan', style: TextStyle(color: Colors.white)),
+                              child: const Text(
+                                'Simpan',
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
                           ),
                         ],
@@ -469,8 +635,14 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
       context: context,
       builder: (ctx) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor: const Color(0xFFF8FCFC),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 24,
+          ),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
             child: SingleChildScrollView(
@@ -487,13 +659,19 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                           color: const Color(0xFFEAF9F8),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Icon(Icons.receipt_long, color: Color(0xFF0E7C7B)),
+                        child: const Icon(
+                          Icons.receipt_long,
+                          color: Color(0xFF0E7C7B),
+                        ),
                       ),
                       const SizedBox(width: 10),
                       const Expanded(
                         child: Text(
                           'Detail Transaksi',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
                       ),
                     ],
@@ -511,7 +689,10 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                   if (item.attachments.isEmpty)
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 14,
+                        horizontal: 12,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFF7F9FB),
                         borderRadius: BorderRadius.circular(12),
@@ -523,7 +704,8 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: TextButton.icon(
-                        onPressed: () => _showZoomablePhotoDialog(item.attachments),
+                        onPressed: () =>
+                            _showZoomablePhotoDialog(item.attachments),
                         icon: const Icon(
                           Icons.remove_red_eye_outlined,
                           color: Color(0xFF0E7C7B),
@@ -544,11 +726,16 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                         child: OutlinedButton(
                           onPressed: () => Navigator.of(ctx).pop(),
                           style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF0E7C7B),
+                            side: const BorderSide(color: Color(0xFF0E7C7B)),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: const Text('Tutup'),
+                          child: const Text(
+                            'Tutup',
+                            style: TextStyle(color: Color(0xFF0E7C7B)),
+                          ),
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -564,8 +751,14 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          icon: const Icon(Icons.edit_outlined, color: Colors.white),
-                          label: const Text('Edit', style: TextStyle(color: Colors.white)),
+                          icon: const Icon(
+                            Icons.edit_outlined,
+                            color: Colors.white,
+                          ),
+                          label: const Text(
+                            'Edit',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                     ],
@@ -579,7 +772,9 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
     );
   }
 
-  Future<void> _showZoomablePhotoDialog(List<ExpenseAttachment> attachments) async {
+  Future<void> _showZoomablePhotoDialog(
+    List<ExpenseAttachment> attachments,
+  ) async {
     if (attachments.isEmpty) return;
     final pageController = PageController();
     int currentIndex = 0;
@@ -591,7 +786,10 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
         return StatefulBuilder(
           builder: (context, setLocalState) {
             return Dialog(
-              insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 38),
+              insetPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 38,
+              ),
               backgroundColor: Colors.transparent,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(34),
@@ -662,7 +860,9 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                               setLocalState(() => currentIndex = index);
                             },
                             itemBuilder: (context, index) {
-                              final url = _attachmentUrl(attachments[index].path);
+                              final url = _attachmentUrl(
+                                attachments[index].path,
+                              );
                               return InteractiveViewer(
                                 minScale: 1,
                                 maxScale: 4,
@@ -671,14 +871,18 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                                   child: Image.network(
                                     url,
                                     fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) => Container(
-                                      color: const Color(0xFFECECEC),
-                                      alignment: Alignment.center,
-                                      child: const Text(
-                                        'Foto gagal dimuat',
-                                        style: TextStyle(color: Colors.black54),
-                                      ),
-                                    ),
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            Container(
+                                              color: const Color(0xFFECECEC),
+                                              alignment: Alignment.center,
+                                              child: const Text(
+                                                'Foto gagal dimuat',
+                                                style: TextStyle(
+                                                  color: Colors.black54,
+                                                ),
+                                              ),
+                                            ),
                                   ),
                                 ),
                               );
@@ -920,7 +1124,9 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                                 );
                                 return;
                               }
-                              final confirmed = await _showDeleteConfirmDialog(it);
+                              final confirmed = await _showDeleteConfirmDialog(
+                                it,
+                              );
                               if (!context.mounted) return;
                               if (confirmed) {
                                 context.read<TripDetailPageBloc>().add(
@@ -1001,6 +1207,8 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                     onPressed: (_isSubmitting || _isAudited || !_isRunning)
                         ? null
                         : () async {
+                            final confirmed = await _showEndTripConfirmDialog();
+                            if (!context.mounted || !confirmed) return;
                             setState(() => _isSubmitting = true);
                             try {
                               context.read<TripDetailPageBloc>().add(

@@ -141,27 +141,32 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
       activeTrip = null;
     }
 
-    var totalOperational = _computeTotalOperational(activeTrips);
-    int? totalTrans;
-    int? sisa;
+    final hasActiveTrips = activeTrips.isNotEmpty;
+    var totalOperational = hasActiveTrips
+        ? _computeTotalOperational(activeTrips)
+        : 0;
+    int? totalTrans = hasActiveTrips ? null : 0;
+    int? sisa = hasActiveTrips ? null : 0;
     try {
-      try {
-        final val = await getTotalInject.call();
-        if (val != null) {
-          totalOperational = val;
+      if (hasActiveTrips) {
+        try {
+          final val = await getTotalInject.call();
+          if (val != null) {
+            totalOperational = val;
+          }
+        } catch (_) {}
+
+        try {
+          totalTrans = await getTotalTransaksi.call();
+        } catch (_) {
+          totalTrans = null;
         }
-      } catch (_) {}
 
-      try {
-        totalTrans = await getTotalTransaksi.call();
-      } catch (_) {
-        totalTrans = null;
-      }
-
-      try {
-        sisa = await getSisaDana.call();
-      } catch (_) {
-        sisa = null;
+        try {
+          sisa = await getSisaDana.call();
+        } catch (_) {
+          sisa = null;
+        }
       }
 
       try {
@@ -179,7 +184,7 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
         if (prevSelected != null) {
           final selId = prevSelected.id;
           TripEntity? found;
-          for (final t in all) {
+          for (final t in activeTrips) {
             if (t.id == selId) {
               found = t;
               break;
@@ -195,23 +200,6 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
 
       // if no explicit selection, prefer activeTrip (most recent BERJALAN)
       selectedTrip ??= activeTrip;
-
-      // if still null, pick newest trip overall by createdAt
-      if (selectedTrip == null) {
-        try {
-          if (all.isNotEmpty) {
-            final sorted = List<TripEntity>.from(all);
-            sorted.sort((a, b) {
-              final da = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-              final db = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-              return db.compareTo(da);
-            });
-            selectedTrip = sorted.first;
-          }
-        } catch (_) {
-          selectedTrip = null;
-        }
-      }
 
       emit(
         HomeLoaded(
@@ -259,7 +247,7 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
         if (prevSelected != null) {
           final selId = prevSelected.id;
           TripEntity? found;
-          for (final t in all) {
+          for (final t in activeTrips) {
             if (t.id == selId) {
               found = t;
               break;
@@ -275,30 +263,20 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
 
       selectedTrip ??= activeTrip;
 
-      if (selectedTrip == null) {
-        try {
-          if (all.isNotEmpty) {
-            final sorted = List<TripEntity>.from(all);
-            sorted.sort((a, b) {
-              final da = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-              final db = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-              return db.compareTo(da);
-            });
-            selectedTrip = sorted.first;
-          }
-        } catch (_) {
-          selectedTrip = null;
-        }
-      }
+      final fallbackTotalOperational = activeTrips.isEmpty
+          ? 0
+          : totalOperational;
+      final fallbackTotalTransaksi = activeTrips.isEmpty ? 0 : null;
+      final fallbackSisaDana = activeTrips.isEmpty ? 0 : null;
 
       emit(
         HomeLoaded(
           trips: all,
           todayTrips: today,
           subscribedToSpd: _subscribed,
-          totalOperational: totalOperational,
-          totalTransaksi: null,
-          sisaDana: null,
+          totalOperational: fallbackTotalOperational,
+          totalTransaksi: fallbackTotalTransaksi,
+          sisaDana: fallbackSisaDana,
           activeTrips: activeTrips,
           activeTrip: activeTrip,
           selectedTrip: selectedTrip,

@@ -159,7 +159,7 @@ class TripDetailPageBloc extends Bloc<TripDetailEvent, TripDetailState> {
         TripDetailActionSuccess(
           preview: preview,
           items: items,
-          message: 'Perubahan berhasil disimpan',
+          message: 'Data berhasil di edit',
         ),
       );
     } on TripDetailFailure catch (e) {

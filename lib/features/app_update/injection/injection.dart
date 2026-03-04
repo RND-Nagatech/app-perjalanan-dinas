@@ -12,7 +12,8 @@ final sl = GetIt.instance;
 void initAppUpdateModule() {
   const manifestUrl = String.fromEnvironment(
     'APP_UPDATE_MANIFEST_URL',
-    defaultValue: '',
+    defaultValue:
+        'https://raw.githubusercontent.com/RND-Nagatech/app-perjalanan-dinas/main/deploy/update/app-update.json',
   );
 
   if (!sl.isRegistered<AppUpdateRemoteDataSource>()) {

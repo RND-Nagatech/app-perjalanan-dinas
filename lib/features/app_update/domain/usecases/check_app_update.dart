@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '../entities/app_update_result.dart';
 import '../repositories/app_update_repository.dart';
 
@@ -6,11 +8,18 @@ class CheckAppUpdate {
 
   CheckAppUpdate(this.repository);
 
+  void _log(String message) {
+    if (kDebugMode) {
+      debugPrint('[AppUpdate][UseCase] $message');
+    }
+  }
+
   Future<AppUpdateResult> call() async {
     final currentVersion = await repository.getCurrentVersion();
     final updateInfo = await repository.fetchUpdateInfo();
 
     if (updateInfo == null) {
+      _log('Tidak ada update info. current=$currentVersion');
       return AppUpdateResult(
         currentVersion: currentVersion,
         updateInfo: null,
@@ -32,6 +41,10 @@ class CheckAppUpdate {
             0;
 
     final forceUpdate = updateInfo.forceUpdate || isBelowMinimum;
+
+    _log(
+      'Decision current=$currentVersion latest=${updateInfo.latestVersion} shouldUpdate=$shouldUpdate forceUpdate=$forceUpdate minSupported=${updateInfo.minSupportedVersion}',
+    );
 
     return AppUpdateResult(
       currentVersion: currentVersion,

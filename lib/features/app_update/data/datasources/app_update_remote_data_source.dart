@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 class AppUpdateRemoteModel {
   final String latestVersion;
@@ -29,22 +30,56 @@ abstract class AppUpdateRemoteDataSource {
 class AppUpdateRemoteDataSourceImpl implements AppUpdateRemoteDataSource {
   final Dio dio;
   final String manifestUrl;
+  late final Dio _publicDio;
 
-  AppUpdateRemoteDataSourceImpl({required this.dio, this.manifestUrl = ''});
+  AppUpdateRemoteDataSourceImpl({required this.dio, this.manifestUrl = ''}) {
+    _publicDio = Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 12),
+        receiveTimeout: const Duration(seconds: 12),
+        sendTimeout: const Duration(seconds: 12),
+        headers: const <String, dynamic>{},
+      ),
+    );
+  }
+
+  void _log(String message) {
+    if (kDebugMode) {
+      debugPrint('[AppUpdate][Remote] $message');
+    }
+  }
 
   @override
   Future<AppUpdateRemoteModel?> fetchUpdateInfo() async {
     final url = manifestUrl.trim();
-    if (url.isEmpty) return null;
+    if (url.isEmpty) {
+      _log('Manifest URL kosong. APP_UPDATE_MANIFEST_URL belum terpasang.');
+      return null;
+    }
 
-    final resp = await dio.get(
-      url,
-      options: Options(validateStatus: (_) => true),
-    );
+    _log('Fetch manifest dari: $url');
+
+    final Response<dynamic> resp;
+    try {
+      resp = await _publicDio.get(
+        url,
+        options: Options(
+          validateStatus: (_) => true,
+          responseType: ResponseType.plain,
+          headers: const <String, dynamic>{},
+        ),
+      );
+    } catch (e) {
+      _log('Gagal request manifest: $e');
+      rethrow;
+    }
+
+    _log('HTTP status manifest: ${resp.statusCode}');
 
     if (resp.statusCode == null ||
         resp.statusCode! < 200 ||
         resp.statusCode! >= 300) {
+      _log('Manifest tidak valid karena status HTTP bukan 2xx.');
       return null;
     }
 
@@ -59,16 +94,23 @@ class AppUpdateRemoteDataSourceImpl implements AppUpdateRemoteDataSource {
           map = Map<String, dynamic>.from(decoded);
         }
       } catch (_) {
+        _log('Gagal parse JSON string manifest.');
         return null;
       }
     }
 
-    if (map == null) return null;
+    if (map == null) {
+      _log('Body manifest bukan object JSON.');
+      return null;
+    }
 
     final latestVersion = (map['latest_version'] ?? map['latestVersion'] ?? '')
         .toString()
         .trim();
-    if (latestVersion.isEmpty) return null;
+    if (latestVersion.isEmpty) {
+      _log('latest_version kosong.');
+      return null;
+    }
 
     final forceRaw = map['force_update'] ?? map['forceUpdate'];
     final forceUpdate =
@@ -80,6 +122,10 @@ class AppUpdateRemoteDataSourceImpl implements AppUpdateRemoteDataSource {
                 map['store_url'] ??
                 map['storeUrl'])
             ?.toString();
+
+    _log(
+      'Manifest terbaca. latest=$latestVersion force=$forceUpdate hasApkUrl=${(downloadUrl ?? '').trim().isNotEmpty}',
+    );
 
     return AppUpdateRemoteModel(
       latestVersion: latestVersion,

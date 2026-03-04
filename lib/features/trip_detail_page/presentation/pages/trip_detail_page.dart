@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:trips_apps/core/services/custom_notice_overlay.dart';
 import 'trip_detail_sheet.dart';
 
 // Router should not create domain entities; this page accepts a trip id
@@ -20,6 +21,8 @@ class TripDetailPage extends StatefulWidget {
 
 class _TripDetailPageState extends State<TripDetailPage>
     with SingleTickerProviderStateMixin {
+  OverlayEntry? _activeNoticeEntry;
+
   String _formatDateRange(DateTime? from, DateTime? to) {
     if (from == null) return '-';
     final f = DateFormat.yMMMd().format(from);
@@ -50,8 +53,24 @@ class _TripDetailPageState extends State<TripDetailPage>
 
   @override
   void dispose() {
+    _activeNoticeEntry?.remove();
+    _activeNoticeEntry = null;
     _controller.dispose();
     super.dispose();
+  }
+
+  void _showCustomNotice(String message, {bool isError = false}) {
+    _activeNoticeEntry?.remove();
+    final entry = CustomNoticeOverlay.show(context, message, isError: isError);
+    _activeNoticeEntry = entry;
+
+    Future<void>.delayed(const Duration(seconds: 3), () {
+      if (!mounted) return;
+      if (_activeNoticeEntry == entry) {
+        _activeNoticeEntry?.remove();
+        _activeNoticeEntry = null;
+      }
+    });
   }
 
   @override
@@ -244,16 +263,9 @@ class _TripDetailPageState extends State<TripDetailPage>
           BlocListener<TripDetailPageBloc, TripDetailState>(
             listener: (context, state) {
               if (state is TripDetailLoadFailure) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error: ${state.message}')),
-                );
+                _showCustomNotice('Error: ${state.message}', isError: true);
               } else if (state is TripDetailActionSuccess) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    duration: const Duration(milliseconds: 900),
-                  ),
-                );
+                _showCustomNotice(state.message);
               }
             },
             child: Align(

@@ -525,6 +525,7 @@ class _FeatureHomeViewState extends State<_FeatureHomeView> {
     List<ExpenseEntity> latestExpenses,
     String userName,
   ) {
+    final hasActiveTrip = activeTrips.isNotEmpty;
     final displayTotalOperational = selectedTrip != null
         ? _getTotalInject(selectedTrip, totalOperational)
         : totalOperational;
@@ -698,6 +699,16 @@ class _FeatureHomeViewState extends State<_FeatureHomeView> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+                          if (!hasActiveTrip) ...[
+                            const SizedBox(height: 6),
+                            const Text(
+                              'Tidak ada perjalanan aktif',
+                              style: TextStyle(
+                                color: Colors.black45,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                           const SizedBox(height: 12),
                           const Divider(),
                           const SizedBox(height: 8),

@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart';
+import 'package:trips_apps/core/services/custom_notice_overlay.dart';
 import '../../domain/entities/active_trip.dart';
 import '../bloc/add_pengeluaran_bloc.dart';
 
@@ -25,10 +26,12 @@ class _AddPengeluaranContentState extends State<AddPengeluaranContent> {
   DateTime? _tanggal;
   final List<File> _attachments = [];
   bool _isFormattingNominal = false;
+  OverlayEntry? _activeNoticeEntry;
 
   @override
   void initState() {
     super.initState();
+    _tanggal = DateTime.now();
     _keteranganFocus.addListener(_onFocusChanged);
     _nominalFocus.addListener(_onFocusChanged);
     _tanggalFocus.addListener(_onFocusChanged);
@@ -89,6 +92,8 @@ class _AddPengeluaranContentState extends State<AddPengeluaranContent> {
 
   @override
   void dispose() {
+    _activeNoticeEntry?.remove();
+    _activeNoticeEntry = null;
     _keterangan.dispose();
     _nominal.dispose();
     _keteranganFocus.removeListener(_onFocusChanged);
@@ -339,6 +344,20 @@ class _AddPengeluaranContentState extends State<AddPengeluaranContent> {
     return nf.format(value);
   }
 
+  void _showCustomNotice(String message, {bool isError = false}) {
+    _activeNoticeEntry?.remove();
+    final entry = CustomNoticeOverlay.show(context, message, isError: isError);
+    _activeNoticeEntry = entry;
+
+    Future<void>.delayed(const Duration(seconds: 3), () {
+      if (!mounted) return;
+      if (_activeNoticeEntry == entry) {
+        _activeNoticeEntry?.remove();
+        _activeNoticeEntry = null;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final pageState = context.watch<AddPengeluaranBloc>().state;
@@ -363,312 +382,309 @@ class _AddPengeluaranContentState extends State<AddPengeluaranContent> {
     final isSaving = pageState is AddPengeluaranSaving;
     final nextItemNumber = draftCount + 1;
 
-    return Container(
-      color: const Color(0xFF0E7C7B),
-      child: Column(
-        children: [
-          SafeArea(
-            bottom: false,
-            child: SizedBox(
-              width: double.infinity,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 20, 24, 26),
-                child: const Center(
-                  child: Text(
-                    'Tambah Pengeluaran',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 36 / 2,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.2,
+    return BlocListener<AddPengeluaranBloc, AddPengeluaranState>(
+      listener: (context, state) {
+        if (state is AddPengeluaranSaved) {
+          _showCustomNotice('Transaksi berhasil disimpan');
+        }
+      },
+      child: MediaQuery.removeViewInsets(
+        removeBottom: true,
+        context: context,
+        child: Container(
+          color: const Color(0xFF0E7C7B),
+          child: Column(
+            children: [
+              SafeArea(
+                bottom: false,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 20, 24, 26),
+                    child: const Center(
+                      child: Text(
+                        'Tambah Pengeluaran',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 36 / 2,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ),
-          Expanded(
-            child: Container(
-              clipBehavior: Clip.antiAlias,
-              decoration: const BoxDecoration(
-                color: Color(0xFFF2F4F7),
-                borderRadius: BorderRadius.vertical(top: Radius.circular(34)),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 18, 16, 16),
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).padding.bottom + 16,
+              Expanded(
+                child: Container(
+                  clipBehavior: Clip.antiAlias,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFF2F4F7),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(34),
+                    ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 6),
-                      BlocBuilder<AddPengeluaranBloc, AddPengeluaranState>(
-                        builder: (context, state) {
-                          ActiveTrip? selected;
-                          if (state is AddPengeluaranLoaded) {
-                            selected = state.selectedTrip;
-                          }
-                          final sisa = selected?.sisaDana;
-                          return Container(
-                            padding: const EdgeInsets.all(14),
-                            margin: const EdgeInsets.only(bottom: 12),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 18, 16, 16),
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).padding.bottom + 16,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 6),
+                          BlocBuilder<AddPengeluaranBloc, AddPengeluaranState>(
+                            builder: (context, state) {
+                              ActiveTrip? selected;
+                              if (state is AddPengeluaranLoaded) {
+                                selected = state.selectedTrip;
+                              }
+                              final sisa = selected?.sisaDana;
+                              return Container(
+                                padding: const EdgeInsets.all(14),
+                                margin: const EdgeInsets.only(bottom: 12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: const Color(0xFFE9EDF1),
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 40,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFECF8F7),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: const Icon(
+                                        Icons.account_balance_wallet,
+                                        color: Color(0xFF0E7C7B),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            'Sisa Anggaran',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black54,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            _formatCurrency(sisa),
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const Icon(
+                                      Icons.lock_outline,
+                                      color: Colors.grey,
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 8),
+                          BlocBuilder<AddPengeluaranBloc, AddPengeluaranState>(
+                            builder: (context, state) {
+                              if (state is AddPengeluaranLoaded) {
+                                final trips = state.trips;
+                                final selected = state.selectedTrip;
+                                final selectedId = selected?.id;
+                                final hasTrips = trips.isNotEmpty;
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Pilih Perjalanan Aktif',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    if (!hasTrips)
+                                      _buildEmptyTripInfo()
+                                    else
+                                      InkWell(
+                                        borderRadius: BorderRadius.circular(16),
+                                        onTap: () => _showTripPickerSheet(
+                                          trips: trips,
+                                          selectedId: selectedId,
+                                        ),
+                                        child: Container(
+                                          width: double.infinity,
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 16,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(
+                                              16,
+                                            ),
+                                            border: Border.all(
+                                              color: const Color(0xFF6B6B72),
+                                              width: 1.1,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.work_outline,
+                                                color: Color(0xFF4F4F59),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Expanded(
+                                                child: Text(
+                                                  selectedId == null
+                                                      ? 'Pilih perjalanan...'
+                                                      : selected?.label ??
+                                                            'Pilih perjalanan...',
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    color: selectedId == null
+                                                        ? const Color(
+                                                            0xFF5E5E66,
+                                                          )
+                                                        : Colors.black87,
+                                                  ),
+                                                ),
+                                              ),
+                                              const Icon(
+                                                Icons.keyboard_arrow_down,
+                                                color: Color(0xFF8C8C94),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                );
+                              }
+                              if (state is AddPengeluaranLoading) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                              return const SizedBox.shrink();
+                            },
+                          ),
+                          const SizedBox(height: 12),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(22),
                               border: Border.all(
                                 color: const Color(0xFFE9EDF1),
                               ),
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFECF8F7),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: const Icon(
-                                    Icons.account_balance_wallet,
-                                    color: Color(0xFF0E7C7B),
-                                  ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color.fromRGBO(0, 0, 0, 0.02),
+                                  blurRadius: 8,
                                 ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'Sisa Anggaran',
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text(
+                                      'DETAIL ITEM BARU',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 6,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFF6F8F7),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        'ITEM #$nextItemNumber',
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: Colors.black54,
                                         ),
                                       ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        _formatCurrency(sisa),
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
-                                const Icon(
-                                  Icons.lock_outline,
-                                  color: Colors.grey,
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 8),
-                      BlocBuilder<AddPengeluaranBloc, AddPengeluaranState>(
-                        builder: (context, state) {
-                          if (state is AddPengeluaranLoaded) {
-                            final trips = state.trips;
-                            final selected = state.selectedTrip;
-                            final selectedId = selected?.id;
-                            final hasTrips = trips.isNotEmpty;
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                                const SizedBox(height: 12),
                                 const Text(
-                                  'Pilih Perjalanan Aktif',
-                                  style: TextStyle(fontWeight: FontWeight.w600),
+                                  'Keterangan',
+                                  style: TextStyle(color: Colors.black54),
                                 ),
                                 const SizedBox(height: 8),
-                                if (!hasTrips)
-                                  _buildEmptyTripInfo()
-                                else
-                                  InkWell(
-                                    borderRadius: BorderRadius.circular(16),
-                                    onTap: () => _showTripPickerSheet(
-                                      trips: trips,
-                                      selectedId: selectedId,
-                                    ),
-                                    child: Container(
-                                      width: double.infinity,
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 16,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(16),
-                                        border: Border.all(
-                                          color: const Color(0xFF6B6B72),
-                                          width: 1.1,
-                                        ),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.work_outline,
-                                            color: Color(0xFF4F4F59),
-                                          ),
-                                          const SizedBox(width: 12),
-                                          Expanded(
-                                            child: Text(
-                                              selectedId == null
-                                                  ? 'Pilih perjalanan...'
-                                                  : selected?.label ??
-                                                        'Pilih perjalanan...',
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                color: selectedId == null
-                                                    ? const Color(0xFF5E5E66)
-                                                    : Colors.black87,
-                                              ),
-                                            ),
-                                          ),
-                                          const Icon(
-                                            Icons.keyboard_arrow_down,
-                                            color: Color(0xFF8C8C94),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                TextField(
+                                  controller: _keterangan,
+                                  focusNode: _keteranganFocus,
+                                  onChanged: (_) => setState(() {}),
+                                  decoration: _buildInputDecoration(
+                                    icon: Icons.description,
+                                    hintText:
+                                        'Contoh: Tiket Pesawat ke Jakarta',
+                                    isFocused: _keteranganFocus.hasFocus,
                                   ),
-                              ],
-                            );
-                          }
-                          if (state is AddPengeluaranLoading) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                          return const SizedBox.shrink();
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(22),
-                          border: Border.all(color: const Color(0xFFE9EDF1)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color.fromRGBO(0, 0, 0, 0.02),
-                              blurRadius: 8,
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
+                                ),
+                                const SizedBox(height: 12),
                                 const Text(
-                                  'DETAIL ITEM BARU',
-                                  style: TextStyle(fontWeight: FontWeight.w800),
+                                  'Nominal',
+                                  style: TextStyle(color: Colors.black54),
                                 ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFF6F8F7),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    'ITEM #$nextItemNumber',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.black54,
+                                const SizedBox(height: 8),
+                                TextField(
+                                  controller: _nominal,
+                                  keyboardType: TextInputType.number,
+                                  focusNode: _nominalFocus,
+                                  onChanged: (_) {
+                                    _formatNominalInput();
+                                    setState(() {});
+                                  },
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(
+                                      RegExp(r'[0-9.]'),
                                     ),
+                                  ],
+                                  decoration: _buildInputDecoration(
+                                    icon: Icons.attach_money,
+                                    hintText: '0',
+                                    isFocused: _nominalFocus.hasFocus,
                                   ),
                                 ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            const Text(
-                              'Keterangan',
-                              style: TextStyle(color: Colors.black54),
-                            ),
-                            const SizedBox(height: 8),
-                            TextField(
-                              controller: _keterangan,
-                              focusNode: _keteranganFocus,
-                              onChanged: (_) => setState(() {}),
-                              decoration: _buildInputDecoration(
-                                icon: Icons.description,
-                                hintText: 'Contoh: Tiket Pesawat ke Jakarta',
-                                isFocused: _keteranganFocus.hasFocus,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            const Text(
-                              'Nominal',
-                              style: TextStyle(color: Colors.black54),
-                            ),
-                            const SizedBox(height: 8),
-                            TextField(
-                              controller: _nominal,
-                              keyboardType: TextInputType.number,
-                              focusNode: _nominalFocus,
-                              onChanged: (_) {
-                                _formatNominalInput();
-                                setState(() {});
-                              },
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                  RegExp(r'[0-9.]'),
+                                const SizedBox(height: 12),
+                                const Text(
+                                  'Tanggal',
+                                  style: TextStyle(color: Colors.black54),
                                 ),
-                              ],
-                              decoration: _buildInputDecoration(
-                                icon: Icons.attach_money,
-                                hintText: '0',
-                                isFocused: _nominalFocus.hasFocus,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            const Text(
-                              'Tanggal',
-                              style: TextStyle(color: Colors.black54),
-                            ),
-                            const SizedBox(height: 8),
-                            TextField(
-                              readOnly: true,
-                              focusNode: _tanggalFocus,
-                              onTap: () async {
-                                _tanggalFocus.requestFocus();
-                                final d = await showDatePicker(
-                                  context: context,
-                                  initialDate: DateTime.now(),
-                                  firstDate: DateTime(2000),
-                                  lastDate: DateTime(2100),
-                                );
-                                if (d != null) {
-                                  setState(() => _tanggal = d);
-                                }
-                                if (!mounted) return;
-                                _tanggalFocus.unfocus();
-                              },
-                              controller: TextEditingController(
-                                text: _tanggal == null
-                                    ? ''
-                                    : DateFormat(
-                                        'yyyy-MM-dd',
-                                      ).format(_tanggal!),
-                              ),
-                              decoration: _buildInputDecoration(
-                                icon: Icons.calendar_today,
-                                hintText: 'mm/dd/yyyy',
-                                isFocused: _tanggalFocus.hasFocus,
-                                suffixIcon: IconButton(
-                                  icon: const Icon(Icons.calendar_today),
-                                  onPressed: () async {
+                                const SizedBox(height: 8),
+                                TextField(
+                                  readOnly: true,
+                                  focusNode: _tanggalFocus,
+                                  onTap: () async {
+                                    _tanggalFocus.requestFocus();
                                     final d = await showDatePicker(
                                       context: context,
                                       initialDate: DateTime.now(),
@@ -678,246 +694,297 @@ class _AddPengeluaranContentState extends State<AddPengeluaranContent> {
                                     if (d != null) {
                                       setState(() => _tanggal = d);
                                     }
+                                    if (!mounted) return;
+                                    _tanggalFocus.unfocus();
                                   },
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            const Text(
-                              'Unggah Lampiran',
-                              style: TextStyle(color: Colors.black54),
-                            ),
-                            const SizedBox(height: 8),
-                            GestureDetector(
-                              onTap: _showAttachmentSourceSheet,
-                              child: Container(
-                                width: double.infinity,
-                                constraints: const BoxConstraints(
-                                  minHeight: 110,
-                                ),
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.grey.shade300,
+                                  controller: TextEditingController(
+                                    text: _tanggal == null
+                                        ? ''
+                                        : DateFormat(
+                                            'yyyy-MM-dd',
+                                          ).format(_tanggal!),
                                   ),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: _buildAttachmentGridPreview(),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 14),
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton.icon(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF0E7C7B),
-                                  foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 14,
-                                  ),
-                                  minimumSize: const Size.fromHeight(52),
-                                ),
-                                onPressed: canAddDraft
-                                    ? () {
-                                        final item = DraftItem(
-                                          tanggal: _tanggal != null
-                                              ? DateFormat(
-                                                  'yyyy-MM-dd',
-                                                ).format(_tanggal!)
-                                              : DateFormat(
-                                                  'yyyy-MM-dd',
-                                                ).format(DateTime.now()),
-                                          nominal:
-                                              int.tryParse(
-                                                _nominal.text.replaceAll(
-                                                  RegExp(r'[^0-9]'),
-                                                  '',
-                                                ),
-                                              ) ??
-                                              0,
-                                          keterangan: _keterangan.text.trim(),
-                                          attachments: List<File>.from(
-                                            _attachments,
-                                          ),
+                                  decoration: _buildInputDecoration(
+                                    icon: Icons.calendar_today,
+                                    hintText: 'mm/dd/yyyy',
+                                    isFocused: _tanggalFocus.hasFocus,
+                                    suffixIcon: IconButton(
+                                      icon: const Icon(Icons.calendar_today),
+                                      onPressed: () async {
+                                        final d = await showDatePicker(
+                                          context: context,
+                                          initialDate: DateTime.now(),
+                                          firstDate: DateTime(2000),
+                                          lastDate: DateTime(2100),
                                         );
-                                        context.read<AddPengeluaranBloc>().add(
-                                          AddDraftEvent(item),
-                                        );
-                                        setState(() {
-                                          _keterangan.clear();
-                                          _nominal.clear();
-                                          _tanggal = null;
-                                          _attachments.clear();
-                                        });
-                                      }
-                                    : null,
-                                icon: const Icon(
-                                  Icons.playlist_add_check_circle_outlined,
-                                ),
-                                label: const Text(
-                                  'Tambahkan ke Draft',
-                                  style: TextStyle(fontWeight: FontWeight.w700),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Draft Pengeluaran($draftCount)',
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(height: 8),
-                      BlocBuilder<AddPengeluaranBloc, AddPengeluaranState>(
-                        builder: (context, state) {
-                          if (state is AddPengeluaranLoaded) {
-                            final drafts = state.drafts ?? [];
-                            if (drafts.isEmpty) {
-                              return const Center(child: Text('Draft kosong'));
-                            }
-                            return ListView.separated(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: drafts.length,
-                              separatorBuilder: (c, i) =>
-                                  const SizedBox(height: 8),
-                              itemBuilder: (ctx, i) {
-                                final d = drafts[i];
-                                return Card(
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                    side: const BorderSide(
-                                      color: Color(0xFFE9EDF1),
+                                        if (d != null) {
+                                          setState(() => _tanggal = d);
+                                        }
+                                      },
                                     ),
                                   ),
-                                  child: ListTile(
-                                    leading: Container(
-                                      width: 44,
-                                      height: 44,
+                                ),
+                                const SizedBox(height: 12),
+                                const Text(
+                                  'Unggah Lampiran',
+                                  style: TextStyle(color: Colors.black54),
+                                ),
+                                const SizedBox(height: 8),
+                                GestureDetector(
+                                  onTap: _showAttachmentSourceSheet,
+                                  child: Container(
+                                    width: double.infinity,
+                                    constraints: const BoxConstraints(
+                                      minHeight: 110,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Colors.grey.shade300,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8),
+                                      child: _buildAttachmentGridPreview(),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 14),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton.icon(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF0E7C7B),
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 14,
+                                      ),
+                                      minimumSize: const Size.fromHeight(52),
+                                    ),
+                                    onPressed: canAddDraft
+                                        ? () {
+                                            final item = DraftItem(
+                                              tanggal: _tanggal != null
+                                                  ? DateFormat(
+                                                      'yyyy-MM-dd',
+                                                    ).format(_tanggal!)
+                                                  : DateFormat(
+                                                      'yyyy-MM-dd',
+                                                    ).format(DateTime.now()),
+                                              nominal:
+                                                  int.tryParse(
+                                                    _nominal.text.replaceAll(
+                                                      RegExp(r'[^0-9]'),
+                                                      '',
+                                                    ),
+                                                  ) ??
+                                                  0,
+                                              keterangan: _keterangan.text
+                                                  .trim(),
+                                              attachments: List<File>.from(
+                                                _attachments,
+                                              ),
+                                            );
+                                            context
+                                                .read<AddPengeluaranBloc>()
+                                                .add(AddDraftEvent(item));
+                                            setState(() {
+                                              _keterangan.clear();
+                                              _nominal.clear();
+                                              _tanggal = DateTime.now();
+                                              _attachments.clear();
+                                            });
+                                          }
+                                        : null,
+                                    icon: const Icon(
+                                      Icons.playlist_add_check_circle_outlined,
+                                    ),
+                                    label: const Text(
+                                      'Tambahkan ke Draft',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Draft Pengeluaran($draftCount)',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                          const SizedBox(height: 8),
+                          BlocBuilder<AddPengeluaranBloc, AddPengeluaranState>(
+                            builder: (context, state) {
+                              if (state is AddPengeluaranLoaded) {
+                                final drafts = state.drafts ?? [];
+                                if (drafts.isEmpty) {
+                                  return const Center(
+                                    child: Text('Draft kosong'),
+                                  );
+                                }
+                                return ListView.separated(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: drafts.length,
+                                  separatorBuilder: (c, i) =>
+                                      const SizedBox(height: 8),
+                                  itemBuilder: (ctx, i) {
+                                    final d = drafts[i];
+                                    return Container(
                                       decoration: BoxDecoration(
-                                        color: Colors.grey[100],
-                                        borderRadius: BorderRadius.circular(8),
+                                        color: const Color(0xFFF8FCFC),
+                                        borderRadius: BorderRadius.circular(16),
+                                        border: Border.all(
+                                          color: const Color(0xFFD8EEED),
+                                        ),
                                       ),
-                                      child: const Icon(
-                                        Icons.receipt_long,
-                                        color: Color(0xFF0E7C7B),
-                                      ),
-                                    ),
-                                    title: Text(d.keterangan),
-                                    subtitle: Text(d.tanggal),
-                                    trailing: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          _formatCurrency(d.nominal),
-                                          style: const TextStyle(
+                                      child: ListTile(
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                              horizontal: 14,
+                                              vertical: 6,
+                                            ),
+                                        leading: Container(
+                                          width: 44,
+                                          height: 44,
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFEAF9F8),
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                          ),
+                                          child: const Icon(
+                                            Icons.receipt_long,
                                             color: Color(0xFF0E7C7B),
-                                            fontWeight: FontWeight.w700,
                                           ),
                                         ),
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.delete_outline,
-                                            color: Colors.grey,
+                                        title: Text(
+                                          d.keterangan,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            color: Color(0xFF1F2937),
                                           ),
-                                          onPressed: () => context
-                                              .read<AddPengeluaranBloc>()
-                                              .add(RemoveDraftEvent(d.id)),
                                         ),
-                                      ],
-                                    ),
-                                  ),
+                                        subtitle: Text(
+                                          d.tanggal,
+                                          style: const TextStyle(
+                                            color: Color(0xFF6B7280),
+                                          ),
+                                        ),
+                                        trailing: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              _formatCurrency(d.nominal),
+                                              style: const TextStyle(
+                                                color: Color(0xFF0E7C7B),
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                            IconButton(
+                                              icon: const Icon(
+                                                Icons.delete_outline,
+                                                color: Color(0xFF9CA3AF),
+                                              ),
+                                              onPressed: () => context
+                                                  .read<AddPengeluaranBloc>()
+                                                  .add(RemoveDraftEvent(d.id)),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 );
-                              },
-                            );
-                          }
-                          if (state is AddPengeluaranLoading) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                          if (state is AddPengeluaranFailure) {
-                            return Center(
-                              child: Text('Error: ${state.message}'),
-                            );
-                          }
-                          return const SizedBox.shrink();
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      Builder(
-                        builder: (context) {
-                          final state = context
-                              .watch<AddPengeluaranBloc>()
-                              .state;
-                          int total = 0;
-                          if (state is AddPengeluaranLoaded) {
-                            total = (state.drafts ?? []).fold<int>(
-                              0,
-                              (p, e) => p + e.nominal,
-                            );
-                          } else if (state is AddPengeluaranSaving) {
-                            total = state.totalNominal;
-                          }
-                          return SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF0E7C7B),
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 14,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                minimumSize: const Size.fromHeight(52),
-                              ),
-                              onPressed: (canSaveAll && !isSaving)
-                                  ? () => context
-                                        .read<AddPengeluaranBloc>()
-                                        .add(SaveAllEvent())
-                                  : null,
-                              child: isSaving
-                                  ? Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        const SizedBox(
-                                          width: 18,
-                                          height: 18,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          'Menyimpan (${_formatCurrency(total)})',
-                                        ),
-                                      ],
-                                    )
-                                  : Text(
-                                      'Simpan Semua (${_formatCurrency(total)})',
+                              }
+                              if (state is AddPengeluaranLoading) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                              if (state is AddPengeluaranFailure) {
+                                return Center(
+                                  child: Text('Error: ${state.message}'),
+                                );
+                              }
+                              return const SizedBox.shrink();
+                            },
+                          ),
+                          const SizedBox(height: 12),
+                          Builder(
+                            builder: (context) {
+                              final state = context
+                                  .watch<AddPengeluaranBloc>()
+                                  .state;
+                              int total = 0;
+                              if (state is AddPengeluaranLoaded) {
+                                total = (state.drafts ?? []).fold<int>(
+                                  0,
+                                  (p, e) => p + e.nominal,
+                                );
+                              } else if (state is AddPengeluaranSaving) {
+                                total = state.totalNominal;
+                              }
+                              return SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF0E7C7B),
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 14,
                                     ),
-                            ),
-                          );
-                        },
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    minimumSize: const Size.fromHeight(52),
+                                  ),
+                                  onPressed: (canSaveAll && !isSaving)
+                                      ? () => context
+                                            .read<AddPengeluaranBloc>()
+                                            .add(SaveAllEvent())
+                                      : null,
+                                  child: isSaving
+                                      ? Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            const SizedBox(
+                                              width: 18,
+                                              height: 18,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 10),
+                                            Text(
+                                              'Menyimpan (${_formatCurrency(total)})',
+                                            ),
+                                          ],
+                                        )
+                                      : Text(
+                                          'Simpan Semua (${_formatCurrency(total)})',
+                                        ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
