@@ -1,8 +1,8 @@
 {
-  "latest_version": "1.0.6",
+  "latest_version": "1.0.7",
   "force_update": true,
   "title": "Update Tersedia",
   "message": "Versi terbaru aplikasi sudah tersedia.",
-  "changelog": "- Update font size",
-  "apk_url": "https://github.com/RND-Nagatech/app-perjalanan-dinas/releases/download/v1.0.6/app-release.apk"
+  "changelog": "- Update Versi",
+  "apk_url": "https://github.com/RND-Nagatech/app-perjalanan-dinas/releases/download/v1.0.7/app-release.apk"
 }
