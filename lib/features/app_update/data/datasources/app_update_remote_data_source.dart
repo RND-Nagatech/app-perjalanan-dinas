@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 
 class AppUpdateRemoteModel {
@@ -47,8 +49,21 @@ class AppUpdateRemoteDataSourceImpl implements AppUpdateRemoteDataSource {
     }
 
     final data = resp.data;
-    if (data is! Map) return null;
-    final map = Map<String, dynamic>.from(data);
+    Map<String, dynamic>? map;
+    if (data is Map) {
+      map = Map<String, dynamic>.from(data);
+    } else if (data is String) {
+      try {
+        final decoded = jsonDecode(data);
+        if (decoded is Map) {
+          map = Map<String, dynamic>.from(decoded);
+        }
+      } catch (_) {
+        return null;
+      }
+    }
+
+    if (map == null) return null;
 
     final latestVersion = (map['latest_version'] ?? map['latestVersion'] ?? '')
         .toString()
