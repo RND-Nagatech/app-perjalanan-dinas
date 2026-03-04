@@ -110,7 +110,7 @@ class _TripDetailPageState extends State<TripDetailPage>
                         'Detail Perjalanan',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 18,
+                          fontSize: 20,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
