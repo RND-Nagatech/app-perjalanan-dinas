@@ -1,5 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:trips_apps/core/domain/entities/trip_entity.dart';
+import 'package:perjalanan_dinas/core/domain/entities/trip_entity.dart';
 import '../../domain/repositories/home_repository.dart';
 import '../datasources/home_remote_data_source.dart';
 // TripModel used inside remote datasource; repository maps models -> entities via toEntity

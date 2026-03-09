@@ -10,7 +10,7 @@ import '../../domain/usecases/clear_trip_item_attachments.dart';
 import '../../domain/usecases/upload_trip_item_attachment.dart';
 import 'trip_detail_page_event.dart';
 import 'trip_detail_page_state.dart';
-import 'package:trips_apps/core/services/refresh_coordinator.dart';
+import 'package:perjalanan_dinas/core/services/refresh_coordinator.dart';
 
 class TripDetailPageBloc extends Bloc<TripDetailEvent, TripDetailState> {
   final GetTripItems getTripItems;
@@ -141,15 +141,13 @@ class TripDetailPageBloc extends Bloc<TripDetailEvent, TripDetailState> {
         }
       }
 
-      if (event.newAttachment != null) {
-        final uploaded = await uploadTripItemAttachment(
-          tripId,
-          itemId,
-          event.newAttachment!,
-        );
-        if (!uploaded) {
-          emit(TripDetailLoadFailure('Gagal upload foto baru'));
-          return;
+      if (event.newAttachments != null && event.newAttachments!.isNotEmpty) {
+        for (final file in event.newAttachments!) {
+          final uploaded = await uploadTripItemAttachment(tripId, itemId, file);
+          if (!uploaded) {
+            emit(TripDetailLoadFailure('Gagal upload foto baru'));
+            return;
+          }
         }
       }
 

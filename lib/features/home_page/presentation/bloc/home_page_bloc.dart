@@ -2,18 +2,18 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:trips_apps/features/home_page/domain/usecases/get_total_inject.dart';
-import 'package:trips_apps/features/home_page/domain/usecases/get_sisa_dana.dart';
-import 'package:trips_apps/features/home_page/domain/usecases/get_total_transaksi.dart';
-import 'package:trips_apps/features/home_page/domain/usecases/refresh_trips.dart';
+import 'package:perjalanan_dinas/features/home_page/domain/usecases/get_total_inject.dart';
+import 'package:perjalanan_dinas/features/home_page/domain/usecases/get_sisa_dana.dart';
+import 'package:perjalanan_dinas/features/home_page/domain/usecases/get_total_transaksi.dart';
+import 'package:perjalanan_dinas/features/home_page/domain/usecases/refresh_trips.dart';
 
-import 'package:trips_apps/core/domain/entities/trip_entity.dart';
+import 'package:perjalanan_dinas/core/domain/entities/trip_entity.dart';
 import '../../domain/usecases/get_trips.dart';
 import '../../domain/usecases/get_today_trips.dart';
 import '../../domain/usecases/toggle_spd_subscription.dart';
 import '../../domain/usecases/get_trip_expenses.dart';
-import 'package:trips_apps/features/trip_detail_page/domain/entities/expense_entity.dart';
-import 'package:trips_apps/core/services/refresh_coordinator.dart';
+import 'package:perjalanan_dinas/features/trip_detail_page/domain/entities/expense_entity.dart';
+import 'package:perjalanan_dinas/core/services/refresh_coordinator.dart';
 
 part 'home_page_event.dart';
 part 'home_page_state.dart';

@@ -1,6 +1,6 @@
 import '../../domain/entities/expense_entity.dart';
 import 'dart:io';
-import 'package:trips_apps/core/domain/entities/trip_entity.dart';
+import 'package:perjalanan_dinas/core/domain/entities/trip_entity.dart';
 import '../../domain/failures/trip_detail_failure.dart';
 import '../../domain/repositories/trip_detail_repository.dart';
 import '../datasources/trip_detail_remote_datasource.dart';
@@ -59,7 +59,11 @@ class TripDetailRepositoryImpl implements TripDetailRepository {
   }
 
   @override
-  Future<bool> updateItem(String tripId, String itemId, Map<String, dynamic> patch) async {
+  Future<bool> updateItem(
+    String tripId,
+    String itemId,
+    Map<String, dynamic> patch,
+  ) async {
     try {
       return await remote.updateItem(tripId, itemId, patch);
     } on TripDetailRemoteException catch (e) {
@@ -85,7 +89,11 @@ class TripDetailRepositoryImpl implements TripDetailRepository {
   }
 
   @override
-  Future<bool> uploadItemAttachment(String tripId, String itemId, File file) async {
+  Future<bool> uploadItemAttachment(
+    String tripId,
+    String itemId,
+    File file,
+  ) async {
     try {
       return await remote.uploadItemAttachment(tripId, itemId, file);
     } on TripDetailRemoteException catch (e) {

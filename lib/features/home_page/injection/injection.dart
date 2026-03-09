@@ -15,10 +15,10 @@ import '../domain/usecases/toggle_spd_subscription.dart';
 import '../domain/usecases/refresh_trips.dart';
 import '../domain/usecases/clear_trips_cache.dart';
 import '../domain/usecases/get_trip_expenses.dart';
-import 'package:trips_apps/features/perjalanan/domain/usecases/refresh_perjalanan.dart';
+import 'package:perjalanan_dinas/features/perjalanan/domain/usecases/refresh_perjalanan.dart';
 
 import '../presentation/bloc/home_page_bloc.dart';
-import 'package:trips_apps/core/services/refresh_coordinator.dart';
+import 'package:perjalanan_dinas/core/services/refresh_coordinator.dart';
 
 final sl = GetIt.instance;
 

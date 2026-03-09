@@ -13,7 +13,7 @@ import '../domain/usecases/update_trip_item.dart';
 import '../domain/usecases/clear_trip_item_attachments.dart';
 import '../domain/usecases/upload_trip_item_attachment.dart';
 import '../presentation/bloc/trip_detail_page_bloc.dart';
-import 'package:trips_apps/core/services/refresh_coordinator.dart';
+import 'package:perjalanan_dinas/core/services/refresh_coordinator.dart';
 
 final sl = GetIt.instance;
 

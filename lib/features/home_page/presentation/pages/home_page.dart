@@ -20,11 +20,11 @@ import '../../../add_pengeluaran/presentation/bloc/add_pengeluaran_bloc.dart'
 // trip_detail injection initialized at app startup in main.dart
 import '../../../trip_detail_page/domain/entities/expense_entity.dart';
 import '../../../perjalanan/presentation/bloc/perjalanan_bloc.dart';
-import 'package:trips_apps/core/domain/entities/trip_entity.dart';
-import 'package:trips_apps/features/app_update/domain/entities/app_update_info.dart';
-import 'package:trips_apps/features/app_update/presentation/cubit/app_update_cubit.dart';
-import 'package:trips_apps/features/app_update/presentation/cubit/app_update_state.dart';
-import 'package:trips_apps/features/history/presentation/pages/history_page.dart';
+import 'package:perjalanan_dinas/core/domain/entities/trip_entity.dart';
+import 'package:perjalanan_dinas/features/app_update/domain/entities/app_update_info.dart';
+import 'package:perjalanan_dinas/features/app_update/presentation/cubit/app_update_cubit.dart';
+import 'package:perjalanan_dinas/features/app_update/presentation/cubit/app_update_state.dart';
+import 'package:perjalanan_dinas/features/history/presentation/pages/history_page.dart';
 
 class FeatureHomePage extends StatelessWidget {
   final int initialIndex;

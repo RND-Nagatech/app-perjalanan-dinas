@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:trips_apps/core/domain/entities/trip_entity.dart';
+import 'package:perjalanan_dinas/core/domain/entities/trip_entity.dart';
 import '../../domain/failures/history_failure.dart';
 import '../../domain/usecases/get_history.dart';
 import '../models/history_section.dart';

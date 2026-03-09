@@ -6,7 +6,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:trips_apps/core/constan/constan.dart';
+import 'package:perjalanan_dinas/core/constan/constan.dart';
 import '../../domain/entities/expense_entity.dart';
 import '../exceptions.dart';
 
@@ -215,7 +215,8 @@ class TripDetailRemoteDataSourceImpl implements TripDetailRemoteDataSource {
         return true;
       }
 
-      lastMessage = _extractMessage(patchResp.data) ??
+      lastMessage =
+          _extractMessage(patchResp.data) ??
           'Gagal memperbarui item (PATCH ${patchResp.statusCode ?? '-'})';
 
       if (patchResp.statusCode == 404 || patchResp.statusCode == 405) {
@@ -229,7 +230,8 @@ class TripDetailRemoteDataSourceImpl implements TripDetailRemoteDataSource {
             putResp.statusCode! < 300) {
           return true;
         }
-        lastMessage = _extractMessage(putResp.data) ??
+        lastMessage =
+            _extractMessage(putResp.data) ??
             'Gagal memperbarui item (PUT ${putResp.statusCode ?? '-'})';
       }
     }
@@ -289,7 +291,11 @@ class TripDetailRemoteDataSourceImpl implements TripDetailRemoteDataSource {
   }
 
   @override
-  Future<bool> uploadItemAttachment(String tripId, String itemId, File file) async {
+  Future<bool> uploadItemAttachment(
+    String tripId,
+    String itemId,
+    File file,
+  ) async {
     try {
       final path =
           '${ApiConfig.current.perjalananURL}/$tripId/items/$itemId/attachments';

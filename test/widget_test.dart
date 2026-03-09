@@ -7,7 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:trips_apps/main.dart';
+import 'package:perjalanan_dinas/main.dart';
 import 'package:go_router/go_router.dart';
 
 void main() {

@@ -1,4 +1,4 @@
-import 'package:trips_apps/features/perjalanan/domain/repositories/perjalanan_repository.dart';
+import 'package:perjalanan_dinas/features/perjalanan/domain/repositories/perjalanan_repository.dart';
 
 /// Usecase to trigger a refresh of perjalanan data.
 class RefreshPerjalananUseCase {

@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart'; // Keep this import
 
-import 'package:trips_apps/core/domain/entities/trip_entity.dart';
+import 'package:perjalanan_dinas/core/domain/entities/trip_entity.dart';
 import '../bloc/perjalanan_bloc.dart';
 // Trip detail navigation handled by app router at /trip
 // import '../../../trip_detail_page/injection/injection.dart' as trip_detail_inject;

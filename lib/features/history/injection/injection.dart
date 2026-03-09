@@ -7,7 +7,7 @@ import '../presentation/bloc/history_bloc.dart';
 import '../data/datasources/history_remote_data_source.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
-import 'package:trips_apps/core/services/refresh_coordinator.dart';
+import 'package:perjalanan_dinas/core/services/refresh_coordinator.dart';
 
 final sl = GetIt.instance;
 

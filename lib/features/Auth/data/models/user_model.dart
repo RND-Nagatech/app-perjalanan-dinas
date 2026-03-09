@@ -1,4 +1,4 @@
-import 'package:trips_apps/features/Auth/domain/entities/user_entity.dart';
+import 'package:perjalanan_dinas/features/Auth/domain/entities/user_entity.dart';
 
 class UserModel extends UserEntity {
   const UserModel({

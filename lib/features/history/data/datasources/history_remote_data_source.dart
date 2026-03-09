@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:trips_apps/features/history/data/models/history_trip_model.dart';
-import 'package:trips_apps/core/constan/constan.dart';
-import 'package:trips_apps/core/domain/entities/trip_entity.dart';
+import 'package:perjalanan_dinas/features/history/data/models/history_trip_model.dart';
+import 'package:perjalanan_dinas/core/constan/constan.dart';
+import 'package:perjalanan_dinas/core/domain/entities/trip_entity.dart';
 import '../exceptions.dart';
 
 abstract class HistoryRemoteDataSource {

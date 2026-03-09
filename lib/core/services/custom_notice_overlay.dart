@@ -8,9 +8,21 @@ class CustomNoticeOverlay {
   }) {
     final bgColor = isError ? const Color(0xFFB3261E) : const Color(0xFF0E7C7B);
     final media = MediaQuery.of(context);
-    final bottomOffset = media.viewInsets.bottom > 0
-        ? media.viewInsets.bottom + 12
-        : media.padding.bottom + 86;
+    // If keyboard is visible, position above keyboard. Otherwise position
+    // above the bottom navigation bar (use the material constant for default
+    // bottom navigation height and include safe area padding).
+    final keyboardInset = media.viewInsets.bottom;
+    final safeBottom = media.padding.bottom;
+    const defaultBottomNavHeight = kBottomNavigationBarHeight; // 56.0
+    // When keyboard visible, keep above keyboard with a small margin.
+    // Otherwise position the notice slightly above the bottom navigation —
+    // reduce the gap so it appears closer to the nav (but still above it).
+    final bottomOffset = (keyboardInset > 0)
+        ? keyboardInset + 12
+        : (safeBottom + defaultBottomNavHeight - 8.5).clamp(
+            8.5,
+            double.infinity,
+          );
 
     final entry = OverlayEntry(
       builder: (context) {

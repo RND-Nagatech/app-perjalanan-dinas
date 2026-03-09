@@ -8,9 +8,9 @@ import '../../domain/usecases/clear_saved_credentials_usecase.dart';
 import '../../domain/failures/auth_failure.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
-import 'package:trips_apps/features/home_page/domain/usecases/refresh_trips.dart';
-import 'package:trips_apps/features/home_page/domain/usecases/clear_trips_cache.dart';
-import 'package:trips_apps/core/services/refresh_coordinator.dart';
+import 'package:perjalanan_dinas/features/home_page/domain/usecases/refresh_trips.dart';
+import 'package:perjalanan_dinas/features/home_page/domain/usecases/clear_trips_cache.dart';
+import 'package:perjalanan_dinas/core/services/refresh_coordinator.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUseCase loginUseCase;

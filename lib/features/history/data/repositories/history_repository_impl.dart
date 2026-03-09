@@ -1,6 +1,6 @@
-import 'package:trips_apps/core/domain/entities/trip_entity.dart';
-import 'package:trips_apps/features/history/domain/failures/history_failure.dart';
-import 'package:trips_apps/features/history/domain/repositories/history_repository.dart';
+import 'package:perjalanan_dinas/core/domain/entities/trip_entity.dart';
+import 'package:perjalanan_dinas/features/history/domain/failures/history_failure.dart';
+import 'package:perjalanan_dinas/features/history/domain/repositories/history_repository.dart';
 import '../datasources/history_remote_data_source.dart';
 import '../exceptions.dart';
 

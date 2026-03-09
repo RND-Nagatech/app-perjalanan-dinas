@@ -78,7 +78,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'Trips Apps',
+      title: 'Perjalanan dinas',
       routerConfig: router,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.teal),

@@ -4,7 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../domain/usecases/get_perjalanan.dart';
 import '../../domain/usecases/refresh_perjalanan.dart';
-import 'package:trips_apps/core/domain/entities/trip_entity.dart';
+import 'package:perjalanan_dinas/core/domain/entities/trip_entity.dart';
 
 part 'perjalanan_event.dart';
 part 'perjalanan_state.dart';

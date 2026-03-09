@@ -36,14 +36,14 @@ class UpdateItemRequested extends TripDetailEvent {
   final String itemId;
   final Map<String, dynamic> patch;
   final bool replaceAttachments;
-  final File? newAttachment;
+  final List<File>? newAttachments;
   final List<String> oldAttachmentPaths;
   UpdateItemRequested(
     this.tripId,
     this.itemId,
     this.patch, {
     this.replaceAttachments = false,
-    this.newAttachment,
+    this.newAttachments,
     this.oldAttachmentPaths = const <String>[],
   });
 
@@ -53,7 +53,7 @@ class UpdateItemRequested extends TripDetailEvent {
     itemId,
     patch,
     replaceAttachments,
-    newAttachment?.path,
+    newAttachments?.map((f) => f.path).join(','),
     oldAttachmentPaths,
   ];
 }

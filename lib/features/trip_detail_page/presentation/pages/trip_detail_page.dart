@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:trips_apps/core/services/custom_notice_overlay.dart';
+import 'package:perjalanan_dinas/core/services/custom_notice_overlay.dart';
 import 'trip_detail_sheet.dart';
 
 // Router should not create domain entities; this page accepts a trip id

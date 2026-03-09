@@ -2,7 +2,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:trips_apps/features/Auth/domain/repositories/auth_repository.dart';
+import 'package:perjalanan_dinas/features/Auth/domain/repositories/auth_repository.dart';
 
 import '../data/datasources/auth_remote_data_source.dart';
 import '../data/repositories/auth_repository_impl.dart';
@@ -13,9 +13,9 @@ import '../domain/usecases/register_usecase.dart';
 import '../domain/usecases/clear_saved_credentials_usecase.dart';
 import '../presentation/bloc/auth_bloc.dart';
 import '../../home_page/injection/injection.dart' as home_inject;
-import 'package:trips_apps/features/home_page/domain/usecases/refresh_trips.dart';
-import 'package:trips_apps/features/home_page/domain/usecases/clear_trips_cache.dart';
-import 'package:trips_apps/core/services/refresh_coordinator.dart';
+import 'package:perjalanan_dinas/features/home_page/domain/usecases/refresh_trips.dart';
+import 'package:perjalanan_dinas/features/home_page/domain/usecases/clear_trips_cache.dart';
+import 'package:perjalanan_dinas/core/services/refresh_coordinator.dart';
 
 final GetIt getIt = GetIt.instance;
 

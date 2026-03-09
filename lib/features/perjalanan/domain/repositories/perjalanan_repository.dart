@@ -1,4 +1,4 @@
-import 'package:trips_apps/core/domain/entities/trip_entity.dart';
+import 'package:perjalanan_dinas/core/domain/entities/trip_entity.dart';
 
 abstract class PerjalananRepository {
   /// Stream perjalanan for the currently logged-in user

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:trips_apps/features/Auth/presentation/bloc/auth_bloc.dart';
-import 'package:trips_apps/features/Auth/presentation/bloc/auth_event.dart';
-import 'package:trips_apps/features/Auth/presentation/bloc/auth_state.dart';
+import 'package:perjalanan_dinas/features/Auth/presentation/bloc/auth_bloc.dart';
+import 'package:perjalanan_dinas/features/Auth/presentation/bloc/auth_event.dart';
+import 'package:perjalanan_dinas/features/Auth/presentation/bloc/auth_state.dart';
 
 class SignupPage extends StatefulWidget {
   final AuthBloc authBloc;

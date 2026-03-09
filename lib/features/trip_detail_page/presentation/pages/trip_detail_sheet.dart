@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trips_apps/core/constan/constan.dart';
+import 'package:perjalanan_dinas/core/constan/constan.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
@@ -146,9 +146,12 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) {
+        final color = Theme.of(ctx).colorScheme;
         return Dialog(
+          backgroundColor: const Color(0xFFF8FCFC),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),
+            side: const BorderSide(color: Color(0xFFD8EEED)),
           ),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
@@ -162,22 +165,19 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                       width: 42,
                       height: 42,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFEAF9F8),
+                        color: const Color(0xFF0E7C7B),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(
-                        Icons.flag_outlined,
-                        color: Color(0xFF0E7C7B),
-                      ),
+                      child: Icon(Icons.flag_outlined, color: Colors.white),
                     ),
                     const SizedBox(width: 12),
-                    const Expanded(
+                    Expanded(
                       child: Text(
                         'Akhiri perjalanan?',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
-                          color: Color(0xFF0B4F4E),
+                          color: color.onSurface,
                         ),
                       ),
                     ),
@@ -188,13 +188,16 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEFF7F6),
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFD8EEED)),
+                    border: Border.all(color: const Color(0xFF0E7C7B)),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Apakah anda yakin ingin mengakhiri perjalanan ini? Setelah dikirim ke audit, data pengeluaran tidak dapat diubah.',
-                    style: TextStyle(color: Color(0xFF0B4F4E), height: 1.35),
+                    style: TextStyle(
+                      color: color.onSurface.withAlpha(230),
+                      height: 1.35,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -204,15 +207,15 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                       child: OutlinedButton(
                         onPressed: () => Navigator.of(ctx).pop(false),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF0E7C7B),
+                          foregroundColor: color.primary,
                           side: const BorderSide(color: Color(0xFF0E7C7B)),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Tidak',
-                          style: TextStyle(color: Color(0xFF0E7C7B)),
+                          style: const TextStyle(color: Color(0xFF0E7C7B)),
                         ),
                       ),
                     ),
@@ -254,7 +257,8 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
     );
     DateTime? selectedDate;
     bool replaceAttachments = false;
-    File? newAttachmentFile;
+    final List<File> newAttachmentFiles = [];
+    final Set<String> removedOldPaths = <String>{};
     try {
       if ((item.tanggal ?? '').isNotEmpty) {
         selectedDate = DateTime.tryParse(item.tanggal!);
@@ -448,26 +452,74 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                                 const SizedBox(width: 8),
                             itemBuilder: (_, i) {
                               final att = item.attachments[i];
-                              return Opacity(
-                                opacity: replaceAttachments ? 0.35 : 1,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: Image.network(
-                                    _attachmentUrl(att.path),
-                                    width: 84,
-                                    height: 84,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, error, stackTrace) =>
-                                        Container(
-                                          width: 84,
-                                          height: 84,
-                                          color: const Color(0xFFF1F4F7),
-                                          child: const Icon(
-                                            Icons.broken_image_outlined,
+                              final isMarked = removedOldPaths.contains(
+                                att.path,
+                              );
+                              return Stack(
+                                children: [
+                                  Opacity(
+                                    opacity: isMarked ? 0.35 : 1,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Image.network(
+                                        _attachmentUrl(att.path),
+                                        width: 84,
+                                        height: 84,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, error, stackTrace) =>
+                                            Container(
+                                              width: 84,
+                                              height: 84,
+                                              color: const Color(0xFFF1F4F7),
+                                              child: const Icon(
+                                                Icons.broken_image_outlined,
+                                              ),
+                                            ),
+                                      ),
+                                    ),
+                                  ),
+                                  if (replaceAttachments)
+                                    Positioned(
+                                      right: 2,
+                                      top: 2,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setLocalState(() {
+                                            if (isMarked) {
+                                              removedOldPaths.remove(att.path);
+                                            } else {
+                                              removedOldPaths.add(att.path);
+                                            }
+                                          });
+                                        },
+                                        child: Container(
+                                          width: 26,
+                                          height: 26,
+                                          decoration: BoxDecoration(
+                                            color: isMarked
+                                                ? const Color(0xFFE53935)
+                                                : Colors.white,
+                                            shape: BoxShape.circle,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withAlpha(
+                                                  31,
+                                                ),
+                                                blurRadius: 4,
+                                              ),
+                                            ],
+                                          ),
+                                          child: Icon(
+                                            Icons.close,
+                                            size: 16,
+                                            color: isMarked
+                                                ? Colors.white
+                                                : Colors.black54,
                                           ),
                                         ),
-                                  ),
-                                ),
+                                      ),
+                                    ),
+                                ],
                               );
                             },
                           ),
@@ -481,7 +533,7 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                                 setLocalState(() {
                                   replaceAttachments = !replaceAttachments;
                                   if (!replaceAttachments) {
-                                    newAttachmentFile = null;
+                                    newAttachmentFiles.clear();
                                   }
                                 });
                               },
@@ -520,14 +572,15 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                               child: OutlinedButton.icon(
                                 onPressed: () async {
                                   final picker = ImagePicker();
-                                  final picked = await picker.pickImage(
-                                    source: ImageSource.gallery,
+                                  final picked = await picker.pickMultiImage(
                                     maxWidth: 1920,
                                     maxHeight: 1080,
                                   );
-                                  if (picked == null) return;
+                                  if (picked.isEmpty) return;
                                   setLocalState(() {
-                                    newAttachmentFile = File(picked.path);
+                                    newAttachmentFiles.addAll(
+                                      picked.map((p) => File(p.path)),
+                                    );
                                   });
                                 },
                                 style: OutlinedButton.styleFrom(
@@ -539,17 +592,91 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                                 label: const Text('Upload Foto Baru'),
                               ),
                             ),
+                            const SizedBox(width: 8),
+                            OutlinedButton.icon(
+                              onPressed: () async {
+                                final picker = ImagePicker();
+                                final XFile? picked = await picker.pickImage(
+                                  source: ImageSource.camera,
+                                  maxWidth: 1920,
+                                  maxHeight: 1080,
+                                );
+                                if (picked == null) return;
+                                setLocalState(() {
+                                  newAttachmentFiles.add(File(picked.path));
+                                });
+                              },
+                              style: OutlinedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              icon: const Icon(Icons.camera_alt_outlined),
+                              label: const Text('Camera'),
+                            ),
                           ],
                         ),
-                        if (newAttachmentFile != null) ...[
+                        if (newAttachmentFiles.isNotEmpty) ...[
                           const SizedBox(height: 8),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.file(
-                              newAttachmentFile!,
-                              height: 110,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
+                          SizedBox(
+                            height: 110,
+                            child: GridView.builder(
+                              scrollDirection: Axis.horizontal,
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 1,
+                                    mainAxisSpacing: 8,
+                                    childAspectRatio: 1.4,
+                                  ),
+                              itemCount: newAttachmentFiles.length,
+                              itemBuilder: (_, index) {
+                                final f = newAttachmentFiles[index];
+                                return Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Image.file(
+                                        f,
+                                        height: 110,
+                                        width: 110,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    Positioned(
+                                      right: 6,
+                                      top: 6,
+                                      child: GestureDetector(
+                                        onTap: () => setLocalState(
+                                          () => newAttachmentFiles.removeAt(
+                                            index,
+                                          ),
+                                        ),
+                                        child: Container(
+                                          width: 28,
+                                          height: 28,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            shape: BoxShape.circle,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withAlpha(
+                                                  31,
+                                                ),
+                                                blurRadius: 4,
+                                              ),
+                                            ],
+                                          ),
+                                          child: const Icon(
+                                            Icons.close,
+                                            size: 16,
+                                            color: Colors.black54,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
                             ),
                           ),
                         ],
@@ -614,7 +741,9 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                                     id,
                                     patch,
                                     replaceAttachments: replaceAttachments,
-                                    newAttachment: newAttachmentFile,
+                                    newAttachments: newAttachmentFiles.isEmpty
+                                        ? null
+                                        : List<File>.from(newAttachmentFiles),
                                     oldAttachmentPaths: item.attachments
                                         .map((e) => e.path)
                                         .toList(),
@@ -717,7 +846,7 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                       ),
                       child: const Text('Tidak ada lampiran foto'),
                     )
-                  else
+                  else if (!_isFinished)
                     Align(
                       alignment: Alignment.centerLeft,
                       child: TextButton.icon(
@@ -756,28 +885,29 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                         ),
                       ),
                       const SizedBox(width: 10),
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () async {
-                            Navigator.of(ctx).pop();
-                            await _showEditDialog(item);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0E7C7B),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                      if (!_isFinished && !_isAudited)
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () async {
+                              Navigator.of(ctx).pop();
+                              await _showEditDialog(item);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF0E7C7B),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            icon: const Icon(
+                              Icons.edit_outlined,
+                              color: Colors.white,
+                            ),
+                            label: const Text(
+                              'Edit',
+                              style: TextStyle(color: Colors.white),
                             ),
                           ),
-                          icon: const Icon(
-                            Icons.edit_outlined,
-                            color: Colors.white,
-                          ),
-                          label: const Text(
-                            'Edit',
-                            style: TextStyle(color: Colors.white),
-                          ),
                         ),
-                      ),
                     ],
                   ),
                 ],
@@ -984,8 +1114,7 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           boxShadow: [
             BoxShadow(
-              // ignore: deprecated_member_use
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withAlpha(20),
               blurRadius: 10,
               offset: const Offset(0, -4),
             ),
@@ -1078,7 +1207,7 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                         boxShadow: [
                           BoxShadow(
                             // ignore: deprecated_member_use
-                            color: Colors.black.withOpacity(0.02),
+                            color: Colors.black.withAlpha(5),
                             blurRadius: 6,
                           ),
                         ],
@@ -1125,35 +1254,36 @@ class _TripDetailSheetState extends State<TripDetailSheet> {
                             style: const TextStyle(fontWeight: FontWeight.w700),
                           ),
                           const SizedBox(width: 6),
-                          IconButton(
-                            onPressed: () => _showDetailDialog(it, nf),
-                            icon: const Icon(Icons.remove_red_eye_outlined),
-                            tooltip: 'Lihat',
-                          ),
-                          IconButton(
-                            onPressed: () async {
-                              final itemId = it.id ?? '';
-                              if (itemId.isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('ID item tidak ditemukan'),
-                                  ),
-                                );
-                                return;
-                              }
-                              final confirmed = await _showDeleteConfirmDialog(
-                                it,
-                              );
-                              if (!context.mounted) return;
-                              if (confirmed) {
-                                context.read<TripDetailPageBloc>().add(
-                                  DeleteItemRequested(widget.tripId, itemId),
-                                );
-                              }
-                            },
-                            icon: const Icon(Icons.delete_outline),
-                            tooltip: 'Hapus',
-                          ),
+                          if (!_isFinished)
+                            IconButton(
+                              onPressed: () => _showDetailDialog(it, nf),
+                              icon: const Icon(Icons.remove_red_eye_outlined),
+                              tooltip: 'Lihat',
+                            ),
+                          if (!_isFinished && !_isAudited)
+                            IconButton(
+                              onPressed: () async {
+                                final itemId = it.id ?? '';
+                                if (itemId.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('ID item tidak ditemukan'),
+                                    ),
+                                  );
+                                  return;
+                                }
+                                final confirmed =
+                                    await _showDeleteConfirmDialog(it);
+                                if (!context.mounted) return;
+                                if (confirmed) {
+                                  context.read<TripDetailPageBloc>().add(
+                                    DeleteItemRequested(widget.tripId, itemId),
+                                  );
+                                }
+                              },
+                              icon: const Icon(Icons.delete_outline),
+                              tooltip: 'Hapus',
+                            ),
                         ],
                       ),
                     );

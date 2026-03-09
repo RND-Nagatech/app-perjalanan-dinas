@@ -1,4 +1,4 @@
-import 'package:trips_apps/core/domain/entities/trip_entity.dart';
+import 'package:perjalanan_dinas/core/domain/entities/trip_entity.dart';
 import '../repositories/trip_detail_repository.dart';
 
 class GetTripPreview {

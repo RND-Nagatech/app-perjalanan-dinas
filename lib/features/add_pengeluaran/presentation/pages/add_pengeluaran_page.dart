@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart';
-import 'package:trips_apps/core/services/custom_notice_overlay.dart';
+import '../../../../core/services/custom_notice_overlay.dart';
 import '../../domain/entities/active_trip.dart';
 import '../bloc/add_pengeluaran_bloc.dart';
 

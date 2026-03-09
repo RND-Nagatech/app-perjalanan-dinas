@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:trips_apps/core/domain/entities/trip_entity.dart';
+import 'package:perjalanan_dinas/core/domain/entities/trip_entity.dart';
 import '../../domain/repositories/perjalanan_repository.dart';
 import '../datasources/perjalanan_remote_data_source.dart';
 

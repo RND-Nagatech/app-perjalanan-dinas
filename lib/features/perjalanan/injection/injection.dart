@@ -3,13 +3,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
 
 import '../../home_page/injection/injection.dart' as home_inject;
-import 'package:trips_apps/features/perjalanan/data/datasources/perjalanan_remote_data_source.dart';
-import 'package:trips_apps/features/perjalanan/data/repositories/perjalanan_repository_impl.dart';
-import 'package:trips_apps/features/perjalanan/domain/repositories/perjalanan_repository.dart';
-import 'package:trips_apps/features/perjalanan/domain/usecases/get_perjalanan.dart';
-import 'package:trips_apps/features/perjalanan/domain/usecases/refresh_perjalanan.dart';
-import 'package:trips_apps/features/perjalanan/presentation/bloc/perjalanan_bloc.dart';
-import 'package:trips_apps/core/services/refresh_coordinator.dart';
+import 'package:perjalanan_dinas/features/perjalanan/data/datasources/perjalanan_remote_data_source.dart';
+import 'package:perjalanan_dinas/features/perjalanan/data/repositories/perjalanan_repository_impl.dart';
+import 'package:perjalanan_dinas/features/perjalanan/domain/repositories/perjalanan_repository.dart';
+import 'package:perjalanan_dinas/features/perjalanan/domain/usecases/get_perjalanan.dart';
+import 'package:perjalanan_dinas/features/perjalanan/domain/usecases/refresh_perjalanan.dart';
+import 'package:perjalanan_dinas/features/perjalanan/presentation/bloc/perjalanan_bloc.dart';
+import 'package:perjalanan_dinas/core/services/refresh_coordinator.dart';
 
 final sl = GetIt.instance;
 
